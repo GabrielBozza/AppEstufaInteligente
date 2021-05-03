@@ -16,9 +16,11 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 
@@ -41,8 +43,9 @@ public class MainActivity extends AppCompatActivity {
     private final static int CONNECTING_STATUS = 1; // used in bluetooth handler to identify message status
     private final static int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
 
-    SeekBar seekBarServo, seekBarRED1, seekBarGREEN1, seekBarBLUE1, seekBarRED2, seekBarGREEN2, seekBarBLUE2, seekBarRED3, seekBarGREEN3, seekBarBLUE3;
-    TextView TextServo, TextRED1, TextGREEN1, TextBLUE1, TextRED2, TextGREEN2, TextBLUE2, TextRED3, TextGREEN3, TextBLUE3;
+    SeekBar seekBarServo, seekBarRED1, seekBarGREEN1, seekBarBLUE1, seekBarRED2, seekBarRED3, seekBarBLUE2, seekBarBLUE3;
+    TextView TextCondicoesAtuais, TextServo, TextRED1, TextGREEN1, TextBLUE1, TextRED2, TextBLUE2,TextRED3, TextBLUE3;
+    Switch LED1, LED2, LED3;
 
 
     @Override
@@ -53,13 +56,39 @@ public class MainActivity extends AppCompatActivity {
         // UI Initialization
         final Button buttonConnect = findViewById(R.id.buttonConnect);
         final Toolbar toolbar = findViewById(R.id.toolbar);
-        final ProgressBar progressBar = findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.GONE);
-        final TextView textViewInfo = findViewById(R.id.textViewInfo);
-        final Button buttonToggle = findViewById(R.id.buttonToggle);
-        buttonToggle.setEnabled(false);
-        final ImageView imageView = findViewById(R.id.imageView);
-        imageView.setBackgroundColor(getResources().getColor(R.color.colorOff));
+        //final ProgressBar progressBar = findViewById(R.id.progressBar);
+        //progressBar.setVisibility(View.GONE);
+        TextCondicoesAtuais = findViewById(R.id.textParametrosAtuais);
+        TextServo = findViewById(R.id.textServo);
+        TextRED1 = findViewById(R.id.textRED1);
+        TextGREEN1 = findViewById(R.id.textGREEN1);
+        TextBLUE1 = findViewById(R.id.textBLUE1);
+        TextRED2 = findViewById(R.id.textRED2);
+        //TextGREEN2 = findViewById(R.id.textGREEN2);
+        TextBLUE2 = findViewById(R.id.textBLUE2);
+        TextRED3 = findViewById(R.id.textRED3);
+        //TextGREEN3 = findViewById(R.id.textGREEN3);
+        TextBLUE3 = findViewById(R.id.textBLUE3);
+
+        seekBarServo = findViewById(R.id.seekBarServo);
+        seekBarRED1 = findViewById(R.id.seekBarLED1Red);
+        seekBarGREEN1 = findViewById(R.id.seekBarLED1Green);
+        seekBarBLUE1 = findViewById(R.id.seekBarLED1Blue);
+        seekBarRED2 = findViewById(R.id.seekBarLED2Red);
+        //seekBarGREEN2 = findViewById(R.id.seekBarLED2Green);
+        seekBarBLUE2 = findViewById(R.id.seekBarLED2Blue);
+        seekBarRED3 = findViewById(R.id.seekBarLED3Red);
+        //seekBarGREEN3 = findViewById(R.id.seekBarLED3Green);
+        seekBarBLUE3 = findViewById(R.id.seekBarLED3Blue);
+
+        LED1 = findViewById(R.id.switch1);
+        LED2 = findViewById(R.id.switch2);
+        LED3 = findViewById(R.id.switch3);
+
+        //final Button buttonToggle = findViewById(R.id.buttonToggle);
+        //buttonToggle.setEnabled(false);
+        //final ImageView imageView = findViewById(R.id.imageView);
+        //imageView.setBackgroundColor(getResources().getColor(R.color.colorOff));
 
         // If a bluetooth device has been selected from SelectDeviceActivity
         deviceName = getIntent().getStringExtra("deviceName");
@@ -67,8 +96,8 @@ public class MainActivity extends AppCompatActivity {
             // Get the device address to make BT Connection
             deviceAddress = getIntent().getStringExtra("deviceAddress");
             // Show progree and connection status
-            toolbar.setSubtitle("Connecting to " + deviceName + "...");
-            progressBar.setVisibility(View.VISIBLE);
+            toolbar.setSubtitle("Conectando com " + deviceName + "...");
+            //progressBar.setVisibility(View.VISIBLE);
             buttonConnect.setEnabled(false);
 
             /*
@@ -91,32 +120,66 @@ public class MainActivity extends AppCompatActivity {
                     case CONNECTING_STATUS:
                         switch(msg.arg1){
                             case 1:
-                                toolbar.setSubtitle("Connected to " + deviceName);
-                                progressBar.setVisibility(View.GONE);
+                                toolbar.setSubtitle("Conectado com " + deviceName);
+                                //progressBar.setVisibility(View.GONE);
                                 buttonConnect.setEnabled(true);
-                                buttonToggle.setEnabled(true);
+                                //buttonToggle.setEnabled(true);
                                 break;
                             case -1:
-                                toolbar.setSubtitle("Device fails to connect");
-                                progressBar.setVisibility(View.GONE);
+                                toolbar.setSubtitle("Problema ao conectar com o dispositivo!");
+                                //progressBar.setVisibility(View.GONE);
                                 buttonConnect.setEnabled(true);
                                 break;
                         }
                         break;
 
                     case MESSAGE_READ:
-                        String arduinoMsg = msg.obj.toString(); // Read message from Arduino
-                        switch (arduinoMsg.toLowerCase()){
+                        String arduinoMsg = msg.obj.toString(); // Ler mensagem recebida do Arduino
+                                                                // --> Envia a cada seg o estado do sistema
+                                                                // ****--> ou fazer um botao pro app pedir o estado atual
+                        String temperatura = arduinoMsg.split("#")[0];
+                        String umidade = arduinoMsg.split("#")[1];
+                        String luminosidade1 = arduinoMsg.split("#")[2];
+                        String luminosidade2 = arduinoMsg.split("#")[3];
+                        String VermelhoLED1 = arduinoMsg.split("#")[4];
+                        String VerdeLED1 = arduinoMsg.split("#")[5];
+                        String AzulLED1 = arduinoMsg.split("#")[6];
+                        String VermelhoLED2 = arduinoMsg.split("#")[7];
+                        String AzulLED2 = arduinoMsg.split("#")[8];
+                        String VermelhoLED3 = arduinoMsg.split("#")[9];
+                        String AzulLED3 = arduinoMsg.split("#")[10];
+                        String ModoOperacao = arduinoMsg.split("#")[11];
+
+                        try {
+                            String EstadoAtual = "Estado atual da estufa:\n";
+                            EstadoAtual+=("Modo de Operação: "+ModoOperacao+"\n");
+                            EstadoAtual+=("Temperatura: "+temperatura+"ºC      "+"Umidade Rel.: "+umidade+"%"+"\n");
+                            EstadoAtual+=("Luminosidade Frente: "+luminosidade1+"      "+"Luminosidade Fundo: "+luminosidade2+"\n");
+                            EstadoAtual+=("LED 1 (Frente): R: "+VermelhoLED1+"   G: "+VerdeLED1+"   B: "+AzulLED1+"\n");
+                            EstadoAtual+=("LED 2 (Meio): R: "+VermelhoLED2+"   G: 0"+"   B: "+AzulLED2+"\n");
+                            EstadoAtual+=("LED 3 (Fundo): R: "+VermelhoLED3+"   G: 0"+"   B: "+AzulLED3+"\n");
+                            TextCondicoesAtuais.setText(EstadoAtual);
+                        }
+                        catch (Exception e){
+                        }
+                        // ***********************************SETAR SWITCHES E SLIDERS DE ACORDO COM OS DADOS RECEBIDOS********************************
+                        //P nao bugar o arduino, ele deve conferir ao receber uma msgm do android se os valores atuais jah nao sao esses --> ai ignora
+
+                        //SE FOR DIFERENTE DO ESTADO ATUAL --> SETAR OS VALORES --> SENAO IGNORA
+
+                        // ****************************************************************************************************************************
+
+                        /*switch (arduinoMsg.toLowerCase()){
                             case "led is turned on":
-                                imageView.setBackgroundColor(getResources().getColor(R.color.colorOn));
-                                textViewInfo.setText("Arduino Message : " + arduinoMsg);
+                                //imageView.setBackgroundColor(getResources().getColor(R.color.colorOn));
+                                //textViewInfo.setText("Arduino Message : " + arduinoMsg);
                                 break;
                             case "led is turned off":
-                                imageView.setBackgroundColor(getResources().getColor(R.color.colorOff));
-                                textViewInfo.setText("Arduino Message : " + arduinoMsg);
+                                //imageView.setBackgroundColor(getResources().getColor(R.color.colorOff));
+                                //textViewInfo.setText("Arduino Message : " + arduinoMsg);
                                 break;
                         }
-                        break;
+                        break;*/
                 }
             }
         };
@@ -131,8 +194,337 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        seekBarServo
+                .setOnSeekBarChangeListener(
+                        new SeekBar
+                                .OnSeekBarChangeListener() {
+
+                            String comando = null;
+
+                            // When the progress value has changed
+                            @Override
+                            public void onProgressChanged(
+                                    SeekBar seekBar,
+                                    int progress,
+                                    boolean fromUser)
+                            {
+                                comando = "<Servo+"+String.valueOf(progress)+">";
+                                //comando = "Servo#"+String.valueOf(progress);
+                                connectedThread.write(comando);
+                            }
+
+                            @Override
+                            public void onStartTrackingTouch(SeekBar seekBar)
+                            {
+
+                                // This method will automatically
+                                // called when the user touches the SeekBar
+                            }
+
+                            @Override
+                            public void onStopTrackingTouch(SeekBar seekBar)
+                            {
+
+                                // This method will automatically
+                                // called when the user
+                                // stops touching the SeekBar
+                            }
+                        });
+
+        seekBarRED1
+                .setOnSeekBarChangeListener(
+                        new SeekBar
+                                .OnSeekBarChangeListener() {
+
+                            String comando = null;
+
+                            // When the progress value has changed
+                            @Override
+                            public void onProgressChanged(
+                                    SeekBar seekBar,
+                                    int progress,
+                                    boolean fromUser)
+                            {
+                                comando = "<RED1+"+String.valueOf(progress)+">";
+                                //comando = "RED1#"+String.valueOf(progress);
+                                connectedThread.write(comando);
+                            }
+
+                            @Override
+                            public void onStartTrackingTouch(SeekBar seekBar)
+                            {
+
+                                // This method will automatically
+                                // called when the user touches the SeekBar
+                            }
+
+                            @Override
+                            public void onStopTrackingTouch(SeekBar seekBar)
+                            {
+
+                                // This method will automatically
+                                // called when the user
+                                // stops touching the SeekBar
+                            }
+                        });
+
+        seekBarRED2
+                .setOnSeekBarChangeListener(
+                        new SeekBar
+                                .OnSeekBarChangeListener() {
+
+                            String comando = null;
+
+                            // When the progress value has changed
+                            @Override
+                            public void onProgressChanged(
+                                    SeekBar seekBar,
+                                    int progress,
+                                    boolean fromUser)
+                            {
+                                comando = "<RED2+"+String.valueOf(progress)+">";
+                                //comando = "RED2#"+String.valueOf(progress);
+                                connectedThread.write(comando);
+                            }
+
+                            @Override
+                            public void onStartTrackingTouch(SeekBar seekBar)
+                            {
+
+                                // This method will automatically
+                                // called when the user touches the SeekBar
+                            }
+
+                            @Override
+                            public void onStopTrackingTouch(SeekBar seekBar)
+                            {
+
+                                // This method will automatically
+                                // called when the user
+                                // stops touching the SeekBar
+                            }
+                        });
+
+        seekBarRED3
+                .setOnSeekBarChangeListener(
+                        new SeekBar
+                                .OnSeekBarChangeListener() {
+
+                            String comando = null;
+
+                            // When the progress value has changed
+                            @Override
+                            public void onProgressChanged(
+                                    SeekBar seekBar,
+                                    int progress,
+                                    boolean fromUser)
+                            {
+                                comando = "<RED3+"+String.valueOf(progress)+">";
+                                //comando = "RED3#"+String.valueOf(progress);
+                                connectedThread.write(comando);
+                            }
+
+                            @Override
+                            public void onStartTrackingTouch(SeekBar seekBar)
+                            {
+
+                                // This method will automatically
+                                // called when the user touches the SeekBar
+                            }
+
+                            @Override
+                            public void onStopTrackingTouch(SeekBar seekBar)
+                            {
+
+                                // This method will automatically
+                                // called when the user
+                                // stops touching the SeekBar
+                            }
+                        });
+
+        seekBarGREEN1
+                .setOnSeekBarChangeListener(
+                        new SeekBar
+                                .OnSeekBarChangeListener() {
+
+                            String comando = null;
+
+                            // When the progress value has changed
+                            @Override
+                            public void onProgressChanged(
+                                    SeekBar seekBar,
+                                    int progress,
+                                    boolean fromUser)
+                            {
+                                comando = "<GREEN1+"+String.valueOf(progress)+">";
+                                //comando = "GREEN1#"+String.valueOf(progress);
+                                connectedThread.write(comando);
+                            }
+
+                            @Override
+                            public void onStartTrackingTouch(SeekBar seekBar)
+                            {
+
+                                // This method will automatically
+                                // called when the user touches the SeekBar
+                            }
+
+                            @Override
+                            public void onStopTrackingTouch(SeekBar seekBar)
+                            {
+
+                                // This method will automatically
+                                // called when the user
+                                // stops touching the SeekBar
+                            }
+                        });
+
+        seekBarBLUE1
+                .setOnSeekBarChangeListener(
+                        new SeekBar
+                                .OnSeekBarChangeListener() {
+
+                            String comando = null;
+
+                            // When the progress value has changed
+                            @Override
+                            public void onProgressChanged(
+                                    SeekBar seekBar,
+                                    int progress,
+                                    boolean fromUser)
+                            {
+                                comando = "<BLUE1+"+String.valueOf(progress)+">";
+                                //comando = "BLUE1#"+String.valueOf(progress);
+                                connectedThread.write(comando);
+                            }
+
+                            @Override
+                            public void onStartTrackingTouch(SeekBar seekBar)
+                            {
+
+                                // This method will automatically
+                                // called when the user touches the SeekBar
+                            }
+
+                            @Override
+                            public void onStopTrackingTouch(SeekBar seekBar)
+                            {
+
+                                // This method will automatically
+                                // called when the user
+                                // stops touching the SeekBar
+                            }
+                        });
+
+        seekBarBLUE2
+                .setOnSeekBarChangeListener(
+                        new SeekBar
+                                .OnSeekBarChangeListener() {
+
+                            String comando = null;
+
+                            // When the progress value has changed
+                            @Override
+                            public void onProgressChanged(
+                                    SeekBar seekBar,
+                                    int progress,
+                                    boolean fromUser)
+                            {
+                                comando = "<BLUE2+"+String.valueOf(progress)+">";
+                                //comando = "BLUE2#"+String.valueOf(progress);
+                                connectedThread.write(comando);
+                            }
+
+                            @Override
+                            public void onStartTrackingTouch(SeekBar seekBar)
+                            {
+
+                                // This method will automatically
+                                // called when the user touches the SeekBar
+                            }
+
+                            @Override
+                            public void onStopTrackingTouch(SeekBar seekBar)
+                            {
+
+                                // This method will automatically
+                                // called when the user
+                                // stops touching the SeekBar
+                            }
+                        });
+
+        seekBarBLUE3
+                .setOnSeekBarChangeListener(
+                        new SeekBar
+                                .OnSeekBarChangeListener() {
+
+                            String comando = null;
+
+                            // When the progress value has changed
+                            @Override
+                            public void onProgressChanged(
+                                    SeekBar seekBar,
+                                    int progress,
+                                    boolean fromUser)
+                            {
+                                comando = "<BLUE3+"+String.valueOf(progress)+">";
+                                //comando = "BLUE3#"+String.valueOf(progress);
+                                connectedThread.write(comando);
+                            }
+
+                            @Override
+                            public void onStartTrackingTouch(SeekBar seekBar)
+                            {
+
+                                // This method will automatically
+                                // called when the user touches the SeekBar
+                            }
+
+                            @Override
+                            public void onStopTrackingTouch(SeekBar seekBar)
+                            {
+
+                                // This method will automatically
+                                // called when the user
+                                // stops touching the SeekBar
+                            }
+                        });
+
+        LED1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            String comando = null;
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) //Line A
+            {
+                comando = "<LED1+"+String.valueOf(isChecked)+">";
+                //comando = "LED1#"+String.valueOf(isChecked);
+                connectedThread.write(comando);
+            }
+        });
+
+        LED2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            String comando = null;
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) //Line A
+            {
+                comando = "<LED2+"+String.valueOf(isChecked)+">";
+                //comando = "LED2#"+String.valueOf(isChecked);
+                connectedThread.write(comando);
+            }
+        });
+
+        LED3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            String comando = null;
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) //Line A
+            {
+                comando = "<LED3+"+String.valueOf(isChecked)+">";
+                //comando = "LED3#"+String.valueOf(isChecked);
+                connectedThread.write(comando);
+            }
+        });
+
         // Button to ON/OFF LED on Arduino Board
-        buttonToggle.setOnClickListener(new View.OnClickListener() {
+       /* buttonToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String cmdText = null;
@@ -152,7 +544,7 @@ public class MainActivity extends AppCompatActivity {
                 // Send command to Arduino board
                 connectedThread.write(cmdText);
             }
-        });
+        });*/
     }
 
     /* ============================ Thread to Create Bluetooth Connection =================================== */
