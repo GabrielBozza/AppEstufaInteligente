@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
                         String VermelhoLED3 = arduinoMsg.split("#")[9];
                         String AzulLED3 = arduinoMsg.split("#")[10];
                         String ModoOperacao = arduinoMsg.split("#")[11];
+                        String posicaoServo = arduinoMsg.split("#")[12];
 
                         try {
                             String EstadoAtual = "Estado atual da estufa:\n";
@@ -159,15 +160,32 @@ public class MainActivity extends AppCompatActivity {
                             EstadoAtual+=("LED 2 (Meio): R: "+VermelhoLED2+"   G: 0"+"   B: "+AzulLED2+"\n");
                             EstadoAtual+=("LED 3 (Fundo): R: "+VermelhoLED3+"   G: 0"+"   B: "+AzulLED3+"\n");
                             TextCondicoesAtuais.setText(EstadoAtual);
+
+                            // ***********************************SETAR SWITCHES E SLIDERS DE ACORDO COM OS DADOS RECEBIDOS********************************
+                            //P nao bugar o arduino, ele deve conferir ao receber uma msgm do android se os valores atuais jah nao sao esses --> ai ignora
+
+                            //SE FOR DIFERENTE DO ESTADO ATUAL --> SETAR OS VALORES --> SENAO IGNORA
+
+                            seekBarServo.setProgress(Integer.parseInt(posicaoServo));
+
+                            seekBarRED1.setProgress(Integer.parseInt(VermelhoLED1));
+                            seekBarGREEN1.setProgress(Integer.parseInt(VerdeLED1));
+                            seekBarBLUE1.setProgress(Integer.parseInt(AzulLED1));
+
+                            seekBarRED2.setProgress(Integer.parseInt(VermelhoLED2));
+                            seekBarBLUE2.setProgress(Integer.parseInt(AzulLED2));
+
+                            seekBarRED3.setProgress(Integer.parseInt(VermelhoLED3));
+                            seekBarBLUE3.setProgress(Integer.parseInt(AzulLED3));
+
+                            LED1.setChecked(((Integer.parseInt(VermelhoLED1)+Integer.parseInt(VerdeLED1)+Integer.parseInt(AzulLED1))!=0));
+                            LED2.setChecked(((Integer.parseInt(VermelhoLED2)+Integer.parseInt(AzulLED2))!=0));
+                            LED3.setChecked(((Integer.parseInt(VermelhoLED3)+Integer.parseInt(AzulLED3))!=0));
+
+                            // ****************************************************************************************************************************
                         }
                         catch (Exception e){
                         }
-                        // ***********************************SETAR SWITCHES E SLIDERS DE ACORDO COM OS DADOS RECEBIDOS********************************
-                        //P nao bugar o arduino, ele deve conferir ao receber uma msgm do android se os valores atuais jah nao sao esses --> ai ignora
-
-                        //SE FOR DIFERENTE DO ESTADO ATUAL --> SETAR OS VALORES --> SENAO IGNORA
-
-                        // ****************************************************************************************************************************
 
                         /*switch (arduinoMsg.toLowerCase()){
                             case "led is turned on":
@@ -208,8 +226,8 @@ public class MainActivity extends AppCompatActivity {
                                     int progress,
                                     boolean fromUser)
                             {
-                                comando = "<Servo+"+String.valueOf(progress)+">";
-                                //comando = "Servo#"+String.valueOf(progress);
+                                comando = "<Servo+"+progress+">";
+                                //comando = "Servo#"+progress;
                                 connectedThread.write(comando);
                             }
 
@@ -245,8 +263,8 @@ public class MainActivity extends AppCompatActivity {
                                     int progress,
                                     boolean fromUser)
                             {
-                                comando = "<RED1+"+String.valueOf(progress)+">";
-                                //comando = "RED1#"+String.valueOf(progress);
+                                comando = "<RED1+"+progress+">";
+                                //comando = "RED1#"+progress;
                                 connectedThread.write(comando);
                             }
 
@@ -282,8 +300,8 @@ public class MainActivity extends AppCompatActivity {
                                     int progress,
                                     boolean fromUser)
                             {
-                                comando = "<RED2+"+String.valueOf(progress)+">";
-                                //comando = "RED2#"+String.valueOf(progress);
+                                comando = "<RED2+"+progress+">";
+                                //comando = "RED2#"+progress;
                                 connectedThread.write(comando);
                             }
 
@@ -319,8 +337,8 @@ public class MainActivity extends AppCompatActivity {
                                     int progress,
                                     boolean fromUser)
                             {
-                                comando = "<RED3+"+String.valueOf(progress)+">";
-                                //comando = "RED3#"+String.valueOf(progress);
+                                comando = "<RED3+"+progress+">";
+                                //comando = "RED3#"+progress;
                                 connectedThread.write(comando);
                             }
 
@@ -356,8 +374,8 @@ public class MainActivity extends AppCompatActivity {
                                     int progress,
                                     boolean fromUser)
                             {
-                                comando = "<GREEN1+"+String.valueOf(progress)+">";
-                                //comando = "GREEN1#"+String.valueOf(progress);
+                                comando = "<GREEN1+"+progress+">";
+                                //comando = "GREEN1#"+progress;
                                 connectedThread.write(comando);
                             }
 
@@ -393,8 +411,8 @@ public class MainActivity extends AppCompatActivity {
                                     int progress,
                                     boolean fromUser)
                             {
-                                comando = "<BLUE1+"+String.valueOf(progress)+">";
-                                //comando = "BLUE1#"+String.valueOf(progress);
+                                comando = "<BLUE1+"+progress+">";
+                                //comando = "BLUE1#"+progress;
                                 connectedThread.write(comando);
                             }
 
@@ -430,8 +448,8 @@ public class MainActivity extends AppCompatActivity {
                                     int progress,
                                     boolean fromUser)
                             {
-                                comando = "<BLUE2+"+String.valueOf(progress)+">";
-                                //comando = "BLUE2#"+String.valueOf(progress);
+                                comando = "<BLUE2+"+progress+">";
+                                //comando = "BLUE2#"+progress;
                                 connectedThread.write(comando);
                             }
 
@@ -467,8 +485,8 @@ public class MainActivity extends AppCompatActivity {
                                     int progress,
                                     boolean fromUser)
                             {
-                                comando = "<BLUE3+"+String.valueOf(progress)+">";
-                                //comando = "BLUE3#"+String.valueOf(progress);
+                                comando = "<BLUE3+"+progress+">";
+                                //comando = "BLUE3#"+progress;
                                 connectedThread.write(comando);
                             }
 
@@ -495,8 +513,8 @@ public class MainActivity extends AppCompatActivity {
             String comando = null;
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) //Line A
             {
-                comando = "<LED1+"+String.valueOf(isChecked)+">";
-                //comando = "LED1#"+String.valueOf(isChecked);
+                comando = "<LED1+"+isChecked+">";
+                //comando = "LED1#"+isChecked;
                 connectedThread.write(comando);
             }
         });
@@ -506,8 +524,8 @@ public class MainActivity extends AppCompatActivity {
             String comando = null;
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) //Line A
             {
-                comando = "<LED2+"+String.valueOf(isChecked)+">";
-                //comando = "LED2#"+String.valueOf(isChecked);
+                comando = "<LED2+"+isChecked+">";
+                //comando = "LED2#"+isChecked;
                 connectedThread.write(comando);
             }
         });
@@ -517,8 +535,8 @@ public class MainActivity extends AppCompatActivity {
             String comando = null;
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) //Line A
             {
-                comando = "<LED3+"+String.valueOf(isChecked)+">";
-                //comando = "LED3#"+String.valueOf(isChecked);
+                comando = "<LED3+"+isChecked+">";
+                //comando = "LED3#"+isChecked;
                 connectedThread.write(comando);
             }
         });
