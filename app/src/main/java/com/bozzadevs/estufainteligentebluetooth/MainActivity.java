@@ -15,11 +15,14 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -27,6 +30,9 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static android.content.ContentValues.TAG;
@@ -43,10 +49,10 @@ public class MainActivity extends AppCompatActivity {
     private final static int CONNECTING_STATUS = 1; // used in bluetooth handler to identify message status
     private final static int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
 
+    Spinner spinnerModoOp;
     SeekBar seekBarServo, seekBarRED1, seekBarGREEN1, seekBarBLUE1, seekBarRED2, seekBarRED3, seekBarBLUE2, seekBarBLUE3;
     TextView TextCondicoesAtuais, TextServo, TextRED1, TextGREEN1, TextBLUE1, TextRED2, TextBLUE2,TextRED3, TextBLUE3;
     Switch LED1, LED2, LED3;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +90,14 @@ public class MainActivity extends AppCompatActivity {
         LED1 = findViewById(R.id.switch1);
         LED2 = findViewById(R.id.switch2);
         LED3 = findViewById(R.id.switch3);
+
+        List<String> ListaModosOp = new ArrayList<>(Arrays.asList("Normal","Crescimento","Floração","Dormência"));
+
+        spinnerModoOp = findViewById(R.id.spinnerModoOp);
+
+        ArrayAdapter<String> adapterModo = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ListaModosOp);
+        adapterModo.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerModoOp.setAdapter(adapterModo);
 
         //final Button buttonToggle = findViewById(R.id.buttonToggle);
         //buttonToggle.setEnabled(false);
@@ -212,6 +226,24 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
+        spinnerModoOp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                // Get the spinner selected item text
+                String selectedItemText = (String) adapterView.getItemAtPosition(i);
+                String comando = "MO#"+selectedItemText;
+                try{connectedThread.write(comando);}
+                catch (Exception ignored){}
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        } );
+
 
         seekBarServo
                 .setOnSeekBarChangeListener(
