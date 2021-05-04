@@ -226,9 +226,11 @@ public class MainActivity extends AppCompatActivity {
                                     int progress,
                                     boolean fromUser)
                             {
-                                comando = "<Servo+"+progress+">";
+                                TextServo.setText("Posição atual: "+progress);
+                                comando = "S1#"+progress;
                                 //comando = "Servo#"+progress;
-                                connectedThread.write(comando);
+                                try{connectedThread.write(comando);}
+                                catch (Exception ignored){}
                             }
 
                             @Override
@@ -263,9 +265,11 @@ public class MainActivity extends AppCompatActivity {
                                     int progress,
                                     boolean fromUser)
                             {
-                                comando = "<RED1+"+progress+">";
+                                TextRED1.setText("Intensidade Vermelho - LED 1: "+progress);
+                                comando = "R1#"+progress;
                                 //comando = "RED1#"+progress;
-                                connectedThread.write(comando);
+                                try{connectedThread.write(comando);}
+                                catch (Exception ignored){}
                             }
 
                             @Override
@@ -300,9 +304,11 @@ public class MainActivity extends AppCompatActivity {
                                     int progress,
                                     boolean fromUser)
                             {
-                                comando = "<RED2+"+progress+">";
+                                TextRED2.setText("Intensidade Vermelho - LED 2: "+progress);
+                                comando = "R2#"+progress;
                                 //comando = "RED2#"+progress;
-                                connectedThread.write(comando);
+                                try{connectedThread.write(comando);}
+                                catch (Exception ignored){}
                             }
 
                             @Override
@@ -337,9 +343,11 @@ public class MainActivity extends AppCompatActivity {
                                     int progress,
                                     boolean fromUser)
                             {
-                                comando = "<RED3+"+progress+">";
+                                TextRED3.setText("Intensidade Vermelho - LED 3: "+progress*255);
+                                comando = "R3#"+progress;
                                 //comando = "RED3#"+progress;
-                                connectedThread.write(comando);
+                                try{connectedThread.write(comando);}
+                                catch (Exception ignored){}
                             }
 
                             @Override
@@ -374,9 +382,11 @@ public class MainActivity extends AppCompatActivity {
                                     int progress,
                                     boolean fromUser)
                             {
-                                comando = "<GREEN1+"+progress+">";
+                                TextGREEN1.setText("Intensidade Verde - LED 1: "+progress);
+                                comando = "G1#"+progress;
                                 //comando = "GREEN1#"+progress;
-                                connectedThread.write(comando);
+                                try{connectedThread.write(comando);}
+                                catch (Exception ignored){}
                             }
 
                             @Override
@@ -411,9 +421,11 @@ public class MainActivity extends AppCompatActivity {
                                     int progress,
                                     boolean fromUser)
                             {
-                                comando = "<BLUE1+"+progress+">";
+                                TextBLUE1.setText("Intensidade Azul - LED 1: "+progress);
+                                comando = "B1#"+progress;
                                 //comando = "BLUE1#"+progress;
-                                connectedThread.write(comando);
+                                try{connectedThread.write(comando);}
+                                catch (Exception ignored){}
                             }
 
                             @Override
@@ -448,9 +460,11 @@ public class MainActivity extends AppCompatActivity {
                                     int progress,
                                     boolean fromUser)
                             {
-                                comando = "<BLUE2+"+progress+">";
+                                TextBLUE2.setText("Intensidade Azul - LED 2: "+progress*255);
+                                comando = "B2#"+progress;
                                 //comando = "BLUE2#"+progress;
-                                connectedThread.write(comando);
+                                try{connectedThread.write(comando);}
+                                catch (Exception ignored){}
                             }
 
                             @Override
@@ -485,9 +499,11 @@ public class MainActivity extends AppCompatActivity {
                                     int progress,
                                     boolean fromUser)
                             {
-                                comando = "<BLUE3+"+progress+">";
+                                TextBLUE3.setText("Intensidade Azul - LED 3: "+progress);
+                                comando = "B3#"+progress;
                                 //comando = "BLUE3#"+progress;
-                                connectedThread.write(comando);
+                                try{connectedThread.write(comando);}
+                                catch (Exception ignored){}
                             }
 
                             @Override
@@ -513,9 +529,26 @@ public class MainActivity extends AppCompatActivity {
             String comando = null;
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) //Line A
             {
-                comando = "<LED1+"+isChecked+">";
+                if(isChecked){
+                    int R=255,G=155,B=255;
+                    seekBarRED1.setProgress(R);
+                    seekBarGREEN1.setProgress(G);
+                    seekBarBLUE1.setProgress(B);
+                    TextRED1.setText("Intensidade Vermelho - LED 1: "+R);
+                    TextGREEN1.setText("Intensidade Verde - LED 1: "+G);
+                    TextBLUE1.setText("Intensidade Azul - LED 1: "+B);
+                }else { //Desligar LED
+                    seekBarRED1.setProgress(0);
+                    seekBarGREEN1.setProgress(0);
+                    seekBarBLUE1.setProgress(0);
+                    TextRED1.setText("Intensidade Vermelho - LED 1: 0");
+                    TextGREEN1.setText("Intensidade Verde - LED 1: 0");
+                    TextBLUE1.setText("Intensidade Azul - LED 1: 0");
+                }
+                comando = "L1#"+isChecked;
                 //comando = "LED1#"+isChecked;
-                connectedThread.write(comando);
+                try{connectedThread.write(comando);}
+                catch (Exception ignored){}
             }
         });
 
@@ -524,9 +557,22 @@ public class MainActivity extends AppCompatActivity {
             String comando = null;
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) //Line A
             {
-                comando = "<LED2+"+isChecked+">";
+                if(isChecked){
+                    int R=255,B=1;
+                    seekBarRED2.setProgress(R);
+                    seekBarBLUE2.setProgress(B);
+                    TextRED2.setText("Intensidade Vermelho - LED 2: "+R);
+                    TextBLUE2.setText("Intensidade Azul - LED 2: 255");
+                }else { //Desligar LED
+                    seekBarRED2.setProgress(0);
+                    seekBarBLUE2.setProgress(0);
+                    TextRED2.setText("Intensidade Vermelho - LED 2: 0");
+                    TextBLUE2.setText("Intensidade Azul - LED 2: 0");
+                }
+                comando = "L2#"+isChecked;
                 //comando = "LED2#"+isChecked;
-                connectedThread.write(comando);
+                try{connectedThread.write(comando);}
+                catch (Exception ignored){}
             }
         });
 
@@ -535,9 +581,22 @@ public class MainActivity extends AppCompatActivity {
             String comando = null;
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) //Line A
             {
-                comando = "<LED3+"+isChecked+">";
+                if(isChecked){
+                    int R=1,B=255;
+                    seekBarRED3.setProgress(R);
+                    seekBarBLUE3.setProgress(B);
+                    TextRED3.setText("Intensidade Vermelho - LED 3: 255");
+                    TextBLUE3.setText("Intensidade Azul - LED 3: "+B);
+                }else { //Desligar LED
+                    seekBarRED3.setProgress(0);
+                    seekBarBLUE3.setProgress(0);
+                    TextRED3.setText("Intensidade Vermelho - LED 3: 0");
+                    TextBLUE3.setText("Intensidade Azul - LED 3: 0");
+                }
+                comando = "L3#"+isChecked;
                 //comando = "LED3#"+isChecked;
-                connectedThread.write(comando);
+                try{connectedThread.write(comando);}
+                catch (Exception ignored){}
             }
         });
 
