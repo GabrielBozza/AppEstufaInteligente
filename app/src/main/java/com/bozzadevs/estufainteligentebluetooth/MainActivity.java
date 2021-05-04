@@ -137,23 +137,24 @@ public class MainActivity extends AppCompatActivity {
                         String arduinoMsg = msg.obj.toString(); // Ler mensagem recebida do Arduino
                                                                 // --> Envia a cada seg o estado do sistema
                                                                 // ****--> ou fazer um botao pro app pedir o estado atual
-                        String temperatura = arduinoMsg.split("#")[0];
-                        String umidade = arduinoMsg.split("#")[1];
-                        String luminosidade1 = arduinoMsg.split("#")[2];
-                        String luminosidade2 = arduinoMsg.split("#")[3];
-                        String VermelhoLED1 = arduinoMsg.split("#")[4];
-                        String VerdeLED1 = arduinoMsg.split("#")[5];
-                        String AzulLED1 = arduinoMsg.split("#")[6];
-                        String VermelhoLED2 = arduinoMsg.split("#")[7];
-                        String AzulLED2 = arduinoMsg.split("#")[8];
-                        String VermelhoLED3 = arduinoMsg.split("#")[9];
-                        String AzulLED3 = arduinoMsg.split("#")[10];
-                        String ModoOperacao = arduinoMsg.split("#")[11];
-                        String posicaoServo = arduinoMsg.split("#")[12];
-
                         try {
+                            String temperatura = arduinoMsg.split("#")[0];
+                            String umidade = arduinoMsg.split("#")[1];
+                            String luminosidade1 = arduinoMsg.split("#")[2];
+                            String luminosidade2 = arduinoMsg.split("#")[3];
+                            String VermelhoLED1 = arduinoMsg.split("#")[4];
+                            String VerdeLED1 = arduinoMsg.split("#")[5];
+                            String AzulLED1 = arduinoMsg.split("#")[6];
+                            String VermelhoLED2 = arduinoMsg.split("#")[7];
+                            String AzulLED2 = arduinoMsg.split("#")[8];
+                            String VermelhoLED3 = arduinoMsg.split("#")[9];
+                            String AzulLED3 = arduinoMsg.split("#")[10];
+                            String ModoOperacao = arduinoMsg.split("#")[11];
+                            String posicaoServo = arduinoMsg.split("#")[12];
+
                             String EstadoAtual = "Estado atual da estufa:\n";
                             EstadoAtual+=("Modo de Operação: "+ModoOperacao+"\n");
+                            EstadoAtual+=("Posição das escotilhas: "+posicaoServo+"º\n");
                             EstadoAtual+=("Temperatura: "+temperatura+"ºC      "+"Umidade Rel.: "+umidade+"%"+"\n");
                             EstadoAtual+=("Luminosidade Frente: "+luminosidade1+"      "+"Luminosidade Fundo: "+luminosidade2+"\n");
                             EstadoAtual+=("LED 1 (Frente): R: "+VermelhoLED1+"   G: "+VerdeLED1+"   B: "+AzulLED1+"\n");
@@ -166,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
                             //SE FOR DIFERENTE DO ESTADO ATUAL --> SETAR OS VALORES --> SENAO IGNORA
 
-                            seekBarServo.setProgress(Integer.parseInt(posicaoServo));
+                           /* seekBarServo.setProgress(Integer.parseInt(posicaoServo));
 
                             seekBarRED1.setProgress(Integer.parseInt(VermelhoLED1));
                             seekBarGREEN1.setProgress(Integer.parseInt(VerdeLED1));
@@ -180,11 +181,11 @@ public class MainActivity extends AppCompatActivity {
 
                             LED1.setChecked(((Integer.parseInt(VermelhoLED1)+Integer.parseInt(VerdeLED1)+Integer.parseInt(AzulLED1))!=0));
                             LED2.setChecked(((Integer.parseInt(VermelhoLED2)+Integer.parseInt(AzulLED2))!=0));
-                            LED3.setChecked(((Integer.parseInt(VermelhoLED3)+Integer.parseInt(AzulLED3))!=0));
+                            LED3.setChecked(((Integer.parseInt(VermelhoLED3)+Integer.parseInt(AzulLED3))!=0));*/
 
                             // ****************************************************************************************************************************
                         }
-                        catch (Exception e){
+                        catch (Exception ignored){
                         }
 
                         /*switch (arduinoMsg.toLowerCase()){
