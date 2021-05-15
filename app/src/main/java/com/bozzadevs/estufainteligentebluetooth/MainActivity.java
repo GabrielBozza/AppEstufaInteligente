@@ -26,13 +26,19 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import static android.content.ContentValues.TAG;
@@ -58,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        this.getSupportActionBar().hide();
 
         // UI Initialization
         final Button buttonConnect = findViewById(R.id.buttonConnect);
@@ -135,13 +143,16 @@ public class MainActivity extends AppCompatActivity {
                         switch(msg.arg1){
                             case 1:
                                 toolbar.setSubtitle("Conectado com " + deviceName);
-                                //progressBar.setVisibility(View.GONE);
                                 buttonConnect.setEnabled(true);
-                                //buttonToggle.setEnabled(true);
+                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM-HH:mm", Locale.getDefault());
+                                //sdf.setTimeZone(TimeZone.getDefault());
+                                String DataHoraAtual = sdf.format(new Date());
+                                try{connectedThread.write("DT#"+DataHoraAtual);
+                                Log.i(TAG,"Comando enviado: "+"DT#"+DataHoraAtual);}//Envia a data e hora ao se conectar
+                                catch (Exception ignored){}
                                 break;
                             case -1:
                                 toolbar.setSubtitle("Problema ao conectar com o dispositivo!");
-                                //progressBar.setVisibility(View.GONE);
                                 buttonConnect.setEnabled(true);
                                 break;
                         }
@@ -165,8 +176,34 @@ public class MainActivity extends AppCompatActivity {
                             String AzulLED3 = arduinoMsg.split("#")[10];
                             String ModoOperacao = arduinoMsg.split("#")[11];
                             String posicaoServo = arduinoMsg.split("#")[12];
+                            String dia = arduinoMsg.split("#")[13];
+                            String mes = arduinoMsg.split("#")[14];
+                            String hora = arduinoMsg.split("#")[15];
+                            String minuto = arduinoMsg.split("#")[16];
+                            String estacao_ano = arduinoMsg.split("#")[17];
+
+                            if(estacao_ano=="0"){
+                                estacao_ano = "Verão";
+                            }else if(estacao_ano=="1"){
+                                estacao_ano = "Outono";
+                            }else if(estacao_ano=="2"){
+                                estacao_ano = "Inverno";
+                            }else if(estacao_ano=="3"){
+                                estacao_ano = "Primavera";
+                            }
+
+                            if(ModoOperacao=="NORM"){
+                                ModoOperacao = "Normal";
+                            }else if(ModoOperacao=="CRES"){
+                                ModoOperacao = "Crescimento";
+                            }else if(ModoOperacao=="FLOR"){
+                                ModoOperacao = "Floração";
+                            }else if(ModoOperacao=="DORM"){
+                                ModoOperacao = "Dormência";
+                            }
 
                             String EstadoAtual = "Estado atual da estufa:\n";
+                            EstadoAtual+=("Data: "+dia+"/"+mes+"  -  "+hora+":"+minuto+"  Estação: "+estacao_ano+"\n");
                             EstadoAtual+=("Modo de Operação: "+ModoOperacao+"\n");
                             EstadoAtual+=("Posição das escotilhas: "+posicaoServo+"º\n");
                             EstadoAtual+=("Temperatura: "+temperatura+"ºC      "+"Umidade Rel.: "+umidade+"%"+"\n");
@@ -234,6 +271,16 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 // Get the spinner selected item text
                 String selectedItemText = (String) adapterView.getItemAtPosition(i);
+                if(selectedItemText=="Normal"){
+                    selectedItemText = "NORM";
+                }else if(selectedItemText=="Crescimento"){
+                    selectedItemText = "CRES";
+                }else if(selectedItemText=="Floração"){
+                    selectedItemText = "FLOR";
+                }else if(selectedItemText=="Dormência"){
+                    selectedItemText = "DORM";
+                }
+
                 String comando = "MO#"+selectedItemText;
                 try{connectedThread.write(comando);}
                 catch (Exception ignored){}
