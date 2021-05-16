@@ -53,22 +53,38 @@
             android:layout_marginStart="10dp"
             android:paddingStart="10dp"
             android:textSize="18dp"
+            android:lineSpacingExtra="4sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />
 
+            <TextView
+                android:id="@+id/textSpinnerModoOp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Modo de Operação"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="10dp"
+                android:paddingStart="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textParametrosAtuais"
+                />
+
         <Spinner
             android:id="@+id/spinnerModoOp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textParametrosAtuais"/>
+            app:layout_constraintTop_toBottomOf="@+id/textSpinnerModoOp"/>
 
         <TextView
             android:id="@+id/textServo"
@@ -101,7 +117,7 @@
             android:id="@+id/switch1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="LED 1"
+            android:text="LED 2 (Meio)"
             android:layout_marginTop="20dp"
             android:layout_marginStart="10dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -114,7 +130,7 @@
             android:id="@+id/textRED1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Intensidade Vermelho - LED 1: 0"
+            android:text="Intensidade Vermelho - LED 2 (Meio): 0"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="10dp"
             android:paddingStart="10dp"
@@ -140,7 +156,7 @@
             android:id="@+id/textGREEN1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Intensidade Verde - LED 1: 0"
+            android:text="Intensidade Verde - LED 2 (Meio): 0"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:paddingStart="10dp"
@@ -166,7 +182,7 @@
             android:id="@+id/textBLUE1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Intensidade Azul - LED 1: 0"
+            android:text="Intensidade Azul - LED 2 (Meio): 0"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:paddingStart="10dp"
@@ -192,7 +208,7 @@
             android:id="@+id/switch2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="LED 2"
+            android:text="LED 1 (Frente)"
             android:layout_marginTop="20dp"
             android:layout_marginStart="10dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -205,7 +221,7 @@
             android:id="@+id/textRED2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Intensidade Vermelho - LED 2: 0"
+            android:text="Intensidade Vermelho - LED 1 (Frente): 0"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:paddingStart="10dp"
@@ -219,7 +235,7 @@
             android:id="@+id/seekBarLED2Red"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:max="255"
+            android:max="1"
             android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -231,7 +247,7 @@
             android:id="@+id/textBLUE2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Intensidade Azul - LED 2: 0"
+            android:text="Intensidade Azul - LED 1 (Frente): 0"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:paddingStart="10dp"
@@ -257,7 +273,7 @@
             android:id="@+id/switch3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="LED 3"
+            android:text="LED 3 (Fundo)"
             android:layout_marginTop="20dp"
             android:layout_marginStart="10dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -270,7 +286,7 @@
             android:id="@+id/textRED3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Intensidade Vermelho - LED 3: 0"
+            android:text="Intensidade Vermelho - LED 3 (Fundo): 0"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:paddingStart="10dp"
@@ -296,7 +312,7 @@
             android:id="@+id/textBLUE3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Intensidade Azul - LED 3: 0"
+            android:text="Intensidade Azul - LED 3 (Fundo): 0"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:paddingStart="10dp"
@@ -306,18 +322,29 @@
             app:layout_constraintTop_toBottomOf="@+id/seekBarLED3Red"
             />
 
-        <SeekBar
+            <SeekBar
             android:id="@+id/seekBarLED3Blue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:max="255"
+            android:max="1"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="60dp"
+            android:layout_marginBottom="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textBLUE3"
             />
+
+            <Button
+                android:id="@+id/buttonAtualizaData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Atualizar Data e Hora"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="60dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/seekBarLED3Blue"/>
         </LinearLayout>
     </ScrollView>
 
