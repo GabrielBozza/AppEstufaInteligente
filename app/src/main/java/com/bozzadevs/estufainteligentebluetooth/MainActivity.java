@@ -3,12 +3,17 @@ package com.bozzadevs.estufainteligentebluetooth;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -43,6 +48,7 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 import static android.content.ContentValues.TAG;
+import static androidx.core.app.NotificationCompat.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,6 +67,10 @@ public class MainActivity extends AppCompatActivity {
     TextView TextCondicoesAtuais, TextServo, TextRED1, TextGREEN2, TextBLUE1, TextRED2, TextBLUE2,TextRED3, TextBLUE3;
     Switch LED1, LED2, LED3;
     Button buttonAtualizaDataHora;
+    Integer tempAlta, tempBaixa;
+    //Builder builder;
+    //NotificationManagerCompat notificationManager;
+    //NotificationCompat.Builder builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,9 +79,29 @@ public class MainActivity extends AppCompatActivity {
 
         this.getSupportActionBar().hide();
 
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel("Notif","Minha notif",NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder builderQuente = new NotificationCompat.Builder(this, "Notif")
+                .setSmallIcon(R.drawable.ic_termometro)
+                .setContentTitle("Estufa muito quente!")
+                .setContentText("Cuide bem de suas plantas!");
+
+        NotificationCompat.Builder builderFrio = new NotificationCompat.Builder(this, "Notif")
+                .setSmallIcon(R.drawable.ic_termometro)
+                .setContentTitle("Estufa muito fria!")
+                .setContentText("Cuide bem de suas plantas!");
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
         // UI Initialization
         final Button buttonConnect = findViewById(R.id.buttonConnect);
         final Toolbar toolbar = findViewById(R.id.toolbar);
+        tempAlta = 0;
+        tempBaixa = 0;
         //final ProgressBar progressBar = findViewById(R.id.progressBar);
         //progressBar.setVisibility(View.GONE);
         TextCondicoesAtuais = findViewById(R.id.textParametrosAtuais);
@@ -216,6 +246,27 @@ public class MainActivity extends AppCompatActivity {
                             EstadoAtual+=("LED 3 (Fundo): R: "+VermelhoLED3+"   G: 0"+"   B: "+AzulLED3+"\n");
                             TextCondicoesAtuais.setText(EstadoAtual);
 
+                            if(Float.parseFloat(temperatura) > 28.0){
+                                tempAlta+=1;
+                                if(tempAlta>240){ //Mais de 2 minutos seguidos com temp > 28
+                                    tempAlta = 0;
+                                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+                                    notificationManager.notify(1, builderQuente.build());
+                                }
+                            } else {
+                                tempAlta = 0;
+                            }
+                            if(Float.parseFloat(temperatura) < 20.0){
+                                tempBaixa+=1;
+                                if(tempBaixa>240){ //Mais de 2 min com temp < 20
+                                    tempBaixa=0;
+                                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+                                    notificationManager.notify(2, builderFrio.build());
+                                }
+                            } else{
+                                tempBaixa=0;
+                            }
+
                             // ***********************************SETAR SWITCHES E SLIDERS DE ACORDO COM OS DADOS RECEBIDOS********************************
 
                             //COLOCAR UM SEMAFORO PARA SOH SETAR OS VALORES UMA UNICA VEZ
@@ -277,6 +328,9 @@ public class MainActivity extends AppCompatActivity {
                 //sdf.setTimeZone(TimeZone.getDefault());
                 String DataHoraAtual = sdf.format(new Date());
                 Toast.makeText(getApplicationContext(), "Data - Hora : " + DataHoraAtual, Toast.LENGTH_LONG).show();
+                //notificationManager.notify(1, builderQuente.build());
+                //notificationManager.notify(2, builderFrio.build());
+
                 try {
                     connectedThread.write("DT#" + DataHoraAtual);
                 }
