@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     Switch LED1, LED2, LED3;
     Button buttonAtualizaDataHora;
     Integer tempAlta, tempBaixa;
+    Boolean AtualizarValoresInterface=true;
     //Builder builder;
     //NotificationManagerCompat notificationManager;
     //NotificationCompat.Builder builder;
@@ -215,32 +216,46 @@ public class MainActivity extends AppCompatActivity {
                             String minuto = arduinoMsg.split("#")[16];
                             String estacao_ano = arduinoMsg.split("#")[17];
 
-                            if(estacao_ano=="0"){
-                                estacao_ano = "Verão";
-                            }else if(estacao_ano=="1"){
-                                estacao_ano = "Outono";
-                            }else if(estacao_ano=="2"){
-                                estacao_ano = "Inverno";
-                            }else if(estacao_ano=="3"){
-                                estacao_ano = "Primavera";
+                            Integer posicao = 180-Integer.parseInt(posicaoServo);
+
+                            switch (estacao_ano) {
+                                case "0":
+                                    estacao_ano = "Verão";
+                                    break;
+                                case "1":
+                                    estacao_ano = "Outono";
+                                    break;
+                                case "2":
+                                    estacao_ano = "Inverno";
+                                    break;
+                                case "3":
+                                    estacao_ano = "Primavera";
+                                    break;
                             }
 
-                            if(ModoOperacao=="NORM"){
-                                ModoOperacao = "Normal";
-                            }else if(ModoOperacao=="CRES"){
-                                ModoOperacao = "Crescimento";
-                            }else if(ModoOperacao=="FLOR"){
-                                ModoOperacao = "Floração";
-                            }else if(ModoOperacao=="DORM"){
-                                ModoOperacao = "Dormência";
+                            estacao_ano = "Outono";
+
+                            switch (ModoOperacao) {
+                                case "NORM":
+                                    ModoOperacao = "Normal";
+                                    break;
+                                case "CRES":
+                                    ModoOperacao = "Crescimento";
+                                    break;
+                                case "FLOR":
+                                    ModoOperacao = "Floração";
+                                    break;
+                                case "DORM":
+                                    ModoOperacao = "Dormência";
+                                    break;
                             }
 
                             String EstadoAtual = "Estado atual da estufa:\n";
                             EstadoAtual+=("Data: "+dia+"/"+mes+"  -  "+hora+":"+minuto+"  Estação: "+estacao_ano+"\n");
                             EstadoAtual+=("Modo de Operação: "+ModoOperacao+"\n");
-                            EstadoAtual+=("Posição das escotilhas: "+posicaoServo+"º\n");
+                            EstadoAtual+=("Posição das escotilhas: "+posicao+"º\n");
                             EstadoAtual+=("Temperatura: "+temperatura+"ºC      "+"Umidade Rel.: "+umidade+"%"+"\n");
-                            EstadoAtual+=("Luminosidade Frente: "+luminosidade1+"      "+"Luminosidade Fundo: "+luminosidade2+"\n");
+                            EstadoAtual+=("Luminosidade Frente: "+luminosidade1+"      "+"\nLuminosidade Fundo: "+luminosidade2+"\n");
                             EstadoAtual+=("LED 1 (Frente): R: "+VermelhoLED1+"   G: 0"+"   B: "+AzulLED1+"\n");
                             EstadoAtual+=("LED 2 (Meio): R: "+VermelhoLED2+"   G: "+VerdeLED2+"   B: "+AzulLED2+"\n");
                             EstadoAtual+=("LED 3 (Fundo): R: "+VermelhoLED3+"   G: 0"+"   B: "+AzulLED3+"\n");
@@ -249,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
                             if(Float.parseFloat(temperatura) > 28.0){
                                 tempAlta+=1;
                                 if(tempAlta>240){ //Mais de 2 minutos seguidos com temp > 28
-                                    tempAlta = 0;
+                                    tempAlta = 0; //Zera  "timer"
                                     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
                                     notificationManager.notify(1, builderQuente.build());
                                 }
@@ -259,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
                             if(Float.parseFloat(temperatura) < 20.0){
                                 tempBaixa+=1;
                                 if(tempBaixa>240){ //Mais de 2 min com temp < 20
-                                    tempBaixa=0;
+                                    tempBaixa=0; //Zera  "timer"
                                     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
                                     notificationManager.notify(2, builderFrio.build());
                                 }
@@ -268,45 +283,27 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             // ***********************************SETAR SWITCHES E SLIDERS DE ACORDO COM OS DADOS RECEBIDOS********************************
-
                             //COLOCAR UM SEMAFORO PARA SOH SETAR OS VALORES UMA UNICA VEZ
-
-                            //P nao bugar o arduino, ele deve conferir ao receber uma msgm do android se os valores atuais jah nao sao esses --> ai ignora
-
                             //SE FOR DIFERENTE DO ESTADO ATUAL --> SETAR OS VALORES --> SENAO IGNORA
 
-                           /* seekBarServo.setProgress(Integer.parseInt(posicaoServo));
+                           if(AtualizarValoresInterface){
+                                AtualizarValoresInterface = false; //semaforo
+                                seekBarServo.setProgress(Integer.parseInt(posicaoServo));
+                                seekBarRED1.setProgress(Integer.parseInt(VermelhoLED1));
+                                seekBarBLUE1.setProgress(Integer.parseInt(AzulLED1));
+                                seekBarRED2.setProgress(Integer.parseInt(VermelhoLED2));
+                                seekBarGREEN2.setProgress(Integer.parseInt(VerdeLED2));
+                                seekBarBLUE2.setProgress(Integer.parseInt(AzulLED2));
+                                seekBarRED3.setProgress(Integer.parseInt(VermelhoLED3));
+                                seekBarBLUE3.setProgress(Integer.parseInt(AzulLED3));
 
-                            seekBarRED1.setProgress(Integer.parseInt(VermelhoLED1));
-                            seekBarGREEN1.setProgress(Integer.parseInt(VerdeLED1));
-                            seekBarBLUE1.setProgress(Integer.parseInt(AzulLED1));
-
-                            seekBarRED2.setProgress(Integer.parseInt(VermelhoLED2));
-                            seekBarBLUE2.setProgress(Integer.parseInt(AzulLED2));
-
-                            seekBarRED3.setProgress(Integer.parseInt(VermelhoLED3));
-                            seekBarBLUE3.setProgress(Integer.parseInt(AzulLED3));
-
-                            LED1.setChecked(((Integer.parseInt(VermelhoLED1)+Integer.parseInt(VerdeLED1)+Integer.parseInt(AzulLED1))!=0));
-                            LED2.setChecked(((Integer.parseInt(VermelhoLED2)+Integer.parseInt(AzulLED2))!=0));
-                            LED3.setChecked(((Integer.parseInt(VermelhoLED3)+Integer.parseInt(AzulLED3))!=0));*/
-
-                            // ****************************************************************************************************************************
+                                LED1.setChecked(((Integer.parseInt(VermelhoLED1)+Integer.parseInt(AzulLED1))!=0));
+                                LED2.setChecked(((Integer.parseInt(VermelhoLED2)+Integer.parseInt(VerdeLED2)+Integer.parseInt(AzulLED2))!=0));
+                                LED3.setChecked(((Integer.parseInt(VermelhoLED3)+Integer.parseInt(AzulLED3))!=0));
+                            }
                         }
                         catch (Exception ignored){
                         }
-
-                        /*switch (arduinoMsg.toLowerCase()){
-                            case "led is turned on":
-                                //imageView.setBackgroundColor(getResources().getColor(R.color.colorOn));
-                                //textViewInfo.setText("Arduino Message : " + arduinoMsg);
-                                break;
-                            case "led is turned off":
-                                //imageView.setBackgroundColor(getResources().getColor(R.color.colorOff));
-                                //textViewInfo.setText("Arduino Message : " + arduinoMsg);
-                                break;
-                        }
-                        break;*/
                 }
             }
         };
@@ -338,9 +335,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
-
         spinnerModoOp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
 
             @Override
@@ -367,7 +361,6 @@ public class MainActivity extends AppCompatActivity {
             }
         } );
 
-
         seekBarServo
                 .setOnSeekBarChangeListener(
                         new SeekBar
@@ -383,7 +376,11 @@ public class MainActivity extends AppCompatActivity {
                                     boolean fromUser)
                             {
                                 TextServo.setText("Posição atual: "+progress);
-                                comando = "S1#"+progress;
+                                String ProgressString = String.valueOf(progress);
+                                if(progress<10){
+                                    ProgressString = "0"+progress; //deixa os comandos com o mesmo tamanho
+                                }
+                                comando = "S1#"+ProgressString;
                                 //comando = "Servo#"+progress;
                                 try{connectedThread.write(comando);}
                                 catch (Exception ignored){}
@@ -422,7 +419,13 @@ public class MainActivity extends AppCompatActivity {
                                     boolean fromUser)
                             {
                                 TextRED1.setText("Intensidade Vermelho - LED 1 (Frente): "+progress*255);
-                                comando = "R2#"+progress;
+                                String Progress = String.valueOf(progress);
+                                if(progress<10){
+                                    Progress = "00"+progress;
+                                } else if(progress<100){
+                                    Progress = "0"+progress;
+                                }
+                                comando = "R2#"+Progress;
                                 //comando = "RED1#"+progress;
                                 try{connectedThread.write(comando);}
                                 catch (Exception ignored){}
@@ -461,7 +464,13 @@ public class MainActivity extends AppCompatActivity {
                                     boolean fromUser)
                             {
                                 TextRED2.setText("Intensidade Vermelho - LED 2 (Meio): "+progress);
-                                comando = "R1#"+progress;
+                                String Progress = String.valueOf(progress);
+                                if(progress<10){
+                                    Progress = "00"+progress;
+                                } else if(progress<100){
+                                    Progress = "0"+progress;
+                                }
+                                comando = "R1#"+Progress;
                                 //comando = "RED2#"+progress;
                                 try{connectedThread.write(comando);}
                                 catch (Exception ignored){}
@@ -500,7 +509,13 @@ public class MainActivity extends AppCompatActivity {
                                     boolean fromUser)
                             {
                                 TextRED3.setText("Intensidade Vermelho - LED 3 (Fundo): "+progress*255);
-                                comando = "R3#"+progress;
+                                String Progress = String.valueOf(progress);
+                                if(progress<10){
+                                    Progress = "00"+progress;
+                                } else if(progress<100){
+                                    Progress = "0"+progress;
+                                }
+                                comando = "R3#"+Progress;
                                 //comando = "RED3#"+progress;
                                 try{connectedThread.write(comando);}
                                 catch (Exception ignored){}
@@ -539,7 +554,13 @@ public class MainActivity extends AppCompatActivity {
                                     boolean fromUser)
                             {
                                 TextGREEN2.setText("Intensidade Verde - LED 2 (Meio): "+progress);
-                                comando = "G1#"+progress;
+                                String Progress = String.valueOf(progress);
+                                if(progress<10){
+                                    Progress = "00"+progress;
+                                } else if(progress<100){
+                                    Progress = "0"+progress;
+                                }
+                                comando = "G1#"+Progress;
                                 //comando = "GREEN1#"+progress;
                                 try{connectedThread.write(comando);}
                                 catch (Exception ignored){}
@@ -578,7 +599,13 @@ public class MainActivity extends AppCompatActivity {
                                     boolean fromUser)
                             {
                                 TextBLUE1.setText("Intensidade Azul - LED 1 (Frente): "+progress*255);
-                                comando = "B2#"+progress;
+                                String Progress = String.valueOf(progress);
+                                if(progress<10){
+                                    Progress = "00"+progress;
+                                } else if(progress<100){
+                                    Progress = "0"+progress;
+                                }
+                                comando = "B2#"+Progress;
                                 //comando = "BLUE1#"+progress;
                                 try{connectedThread.write(comando);}
                                 catch (Exception ignored){}
@@ -617,7 +644,13 @@ public class MainActivity extends AppCompatActivity {
                                     boolean fromUser)
                             {
                                 TextBLUE2.setText("Intensidade Azul - LED 2 (Meio): "+progress);
-                                comando = "B1#"+progress;
+                                String Progress = String.valueOf(progress);
+                                if(progress<10){
+                                    Progress = "00"+progress;
+                                } else if(progress<100){
+                                    Progress = "0"+progress;
+                                }
+                                comando = "B1#"+Progress;
                                 //comando = "BLUE2#"+progress;
                                 try{connectedThread.write(comando);}
                                 catch (Exception ignored){}
@@ -656,7 +689,13 @@ public class MainActivity extends AppCompatActivity {
                                     boolean fromUser)
                             {
                                 TextBLUE3.setText("Intensidade Azul - LED 3 (Fundo): "+progress*255);
-                                comando = "B3#"+progress;
+                                String Progress = String.valueOf(progress);
+                                if(progress<10){
+                                    Progress = "00"+progress;
+                                } else if(progress<100){
+                                    Progress = "0"+progress;
+                                }
+                                comando = "B3#"+Progress;
                                 //comando = "BLUE3#"+progress;
                                 try{connectedThread.write(comando);}
                                 catch (Exception ignored){}
@@ -701,7 +740,9 @@ public class MainActivity extends AppCompatActivity {
                     TextGREEN2.setText("Intensidade Verde - LED 2 (Meio): 0");
                     TextBLUE2.setText("Intensidade Azul - LED 2 (Meio): 0");
                 }
-                comando = "L1#"+isChecked;
+                String isCheckedString = "0";
+                if(isChecked) isCheckedString = "1";
+                comando = "L1#"+isCheckedString;
                 //comando = "LED1#"+isChecked;
                 try{connectedThread.write(comando);}
                 catch (Exception ignored){}
@@ -725,7 +766,9 @@ public class MainActivity extends AppCompatActivity {
                     TextRED1.setText("Intensidade Vermelho - LED 1 (Frente): 0");
                     TextBLUE1.setText("Intensidade Azul - LED 1 (Frente): 0");
                 }
-                comando = "L2#"+isChecked;
+                String isCheckedString = "0";
+                if(isChecked) isCheckedString = "1";
+                comando = "L2#"+isCheckedString;
                 //comando = "LED2#"+isChecked;
                 try{connectedThread.write(comando);}
                 catch (Exception ignored){}
@@ -749,35 +792,14 @@ public class MainActivity extends AppCompatActivity {
                     TextRED3.setText("Intensidade Vermelho - LED 3 (Funndo): 0");
                     TextBLUE3.setText("Intensidade Azul - LED 3 (Funndo): 0");
                 }
-                comando = "L3#"+isChecked;
+                String isCheckedString = "0";
+                if(isChecked) isCheckedString = "1";
+                comando = "L3#"+isCheckedString;
                 //comando = "LED3#"+isChecked;
                 try{connectedThread.write(comando);}
                 catch (Exception ignored){}
             }
         });
-
-        // Button to ON/OFF LED on Arduino Board
-       /* buttonToggle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String cmdText = null;
-                String btnState = buttonToggle.getText().toString().toLowerCase();
-                switch (btnState){
-                    case "turn on":
-                        buttonToggle.setText("Turn Off");
-                        // Command to turn on LED on Arduino. Must match with the command in Arduino code
-                        cmdText = "<turn on>";
-                        break;
-                    case "turn off":
-                        buttonToggle.setText("Turn On");
-                        // Command to turn off LED on Arduino. Must match with the command in Arduino code
-                        cmdText = "<turn off>";
-                        break;
-                }
-                // Send command to Arduino board
-                connectedThread.write(cmdText);
-            }
-        });*/
     }
 
     /* ============================ Thread to Create Bluetooth Connection =================================== */
